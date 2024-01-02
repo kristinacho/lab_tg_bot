@@ -12,7 +12,7 @@ load_dotenv()
 bot = telebot.TeleBot(os.environ.get('TG_BOT_TOKEN'))
 
 def mainWindow():
-    markup1 = types.InlineKeyboardMarkup(row_width=2)
+    markup = types.InlineKeyboardMarkup(row_width=2)
     item = types.InlineKeyboardButton("Создать пост", callback_data="item_1")
     item3 = types.InlineKeyboardButton("Мои посты", callback_data="my_posts")
     markup.add(item, item3)
