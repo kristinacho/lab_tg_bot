@@ -3,3 +3,5 @@
 1) склонировать
 2) добавить файл .env и заполнить поля: TG_BOT_TOKEN и VK_TOKEN
 3) vk token нужен с разрешением wall
+4) установить зависимости из requirements.txt
+5) Команда для запуска: python app.py
