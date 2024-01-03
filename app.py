@@ -124,6 +124,6 @@ def info(message):
             )
             user_state[chat_id] = "waiting_for_fourth_message"
 
-if __name__ == "main":
+if __name__ == "__main__":
     print("Bot started...")
     bot.polling()
