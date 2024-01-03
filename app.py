@@ -39,7 +39,7 @@ def myPostWindow(postId):
 @bot.message_handler(commands=["start"])
 def start(message):
     markup = mainWindow()
-    bot.send_message(message.chat.id, "Выберите действие", reply_markup=markup)
+    bot.send_message(message.chat.id, "Привет, это Телеграм Бот, который поможет тебе опубликовать запись в сообществе Вконтакте!  Выберите действие: ", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -47,7 +47,7 @@ def callback(call):
     if call.message:
         if call.data == "item_1":
             bot.edit_message_text(
-                chat_id=call.message.chat.id, message_id=call.message.id, text = "Напиши название для публикуемой записи"
+                chat_id=call.message.chat.id, message_id=call.message.id, text = "Напиши название для публикуемой записи. "
             )
         
         elif call.data == "my_posts" or call.data == "back_my_posts":
@@ -56,7 +56,7 @@ def callback(call):
         
         elif call.data == "back_main":
             markup = mainWindow()
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id = call.message.id, text = "Выберите действие", reply_markup=markup)
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id = call.message.id, text = "Выберите действие:", reply_markup=markup)
         
         elif "post_" in call.data:
             postId = call.data.split("_")[1]
@@ -71,21 +71,30 @@ def callback(call):
             if (vkPostIdPrev != ""):
                 wallPostDelete(post)
             response=wallPost(post)
-            vkPostIdNew=response['post_id']
-            post['id_vk'] = vkPostIdNew
-            changePostById('posts.json', post)
-            markup = myPostsWindow()
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text = "Мои посты", reply_markup=markup)
+            if 'post_id' in response:
+                vkPostIdNew=response['post_id']
+                post['id_vk'] = vkPostIdNew
+                changePostById('posts.json', post)
+                markup = myPostsWindow()
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text = "Пост успешно опубликован в группу вк. \n\nМои посты:", reply_markup=markup)
+            else:
+                markup = myPostsWindow()
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text = "Произошла ошибка при публикации поста в группу вк. \n\nМои посты:", reply_markup=markup)
 
         elif "removePost_" in call.data:
             postId = call.data.split("_")[1]
             post = getPostById('posts.json' , postId)
             vkPostIdPrev = post['id_vk']
             if (vkPostIdPrev != ""):
-                wallPostDelete(post)
-            deletePostById('posts.json' , postId)
-            markup = myPostsWindow()
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text = "Мои посты", reply_markup=markup)
+                response = wallPostDelete(post)
+                if response == 1:
+                    deletePostById('posts.json' , postId)
+                    markup = myPostsWindow()
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text = "Пост успешно удален. \n\nМои посты:", reply_markup=markup)
+                else:
+                    markup = myPostsWindow()
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text = "Произошла ошибка при удалении поста с группы вк. \n\nМои посты:", reply_markup=markup)
+                    
 
 
 user_state = {}
